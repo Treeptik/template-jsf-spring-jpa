@@ -103,13 +103,13 @@
 			<artifactId>jsf-impl</artifactId>
 			<version>${jsf.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-web-api</artifactId>
 			<version>${javaee-web-api.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>javax.servlet.jsp</groupId>
 			<artifactId>jsp-api</artifactId>
@@ -117,7 +117,7 @@
 		</dependency>
 
 	</dependencies>
-	
+
 	<profiles>
 		<profile>
 			<id>DEV</id>
@@ -133,7 +133,7 @@
 				</resources>
 			</build>
 			<properties>
-				<jdbc.className>org.springframework.jdbc.datasource.SimpleDriverDataSource</jdbc.className>
+				<jdbc.className>org.apache.commons.dbcp.BasicDataSource</jdbc.className>
 				<jdbc.driverClassName>org.h2.Driver</jdbc.driverClassName>
 				<jdbc.url>jdbc:h2:mem:test;MODE=Oracle;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE</jdbc.url>
 				<jdbc.username>sa</jdbc.username>
@@ -144,7 +144,7 @@
 		</profile>
 
 		<profile>
-			<id>CLOUDUNIT</id>
+			<id>MICROPAAS</id>
 			<build>
 				<resources>
 					<resource>
@@ -152,13 +152,30 @@
 						<filtering>true</filtering>
 					</resource>
 				</resources>
+				<plugins>
+					<plugin>
+						<groupId>fr.treeptik.micropaas.maven.plugins</groupId>
+						<artifactId>docker-maven-plugin</artifactId>
+						<version>0.0.1</version>
+						<configuration>
+							<urlDockerManager>http://192.168.1.103:4243</urlDockerManager>
+							<containerImage>micropaas/tomcat-mysql</containerImage>
+							<containerName>superProjetTest</containerName>
+							<cmds>
+								<cmd>/bin/sh</cmd>
+								<cmd>start-service.sh</cmd>
+								<cmd>databaseName</cmd>
+							</cmds>
+						</configuration>
+					</plugin>
+				</plugins>
 			</build>
 			<properties>
 				<jdbc.className>org.apache.commons.dbcp.BasicDataSource</jdbc.className>
 				<jdbc.driverClassName>com.mysql.jdbc.Driver</jdbc.driverClassName>
-				<jdbc.url></jdbc.url>
-				<jdbc.username></jdbc.username>
-				<jdbc.password></jdbc.password>
+				<jdbc.url>jdbc:mysql://localhost:3306/databaseName</jdbc.url>
+				<jdbc.username>root</jdbc.username>
+				<jdbc.password>root</jdbc.password>
 				<log.severity>WARN</log.severity>
 				<application.log.severity>WARN</application.log.severity>
 			</properties>
